@@ -1,5 +1,8 @@
 import yaml
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
+import torchvision
 
 class DotDict(dict):
     """dot.notation access to dictionary attributes (Thomas Robert)"""
@@ -93,3 +96,37 @@ def sample_mask(labelmap):
     for c in pos_classes:
         mask = torch.logical_or(mask, labelmap == c)
     return mask
+
+def color_map(labelmap):
+    random_colorized = torch.cat([
+        (torch.tanh(labelmap.to(float)) + 1) / 2 * 255,
+        (torch.sin(labelmap.to(float)) + 1) / 2 * 255,
+        (torch.cos(labelmap.to(float)) + 1) / 2 * 255
+    ], 1).to(int)
+    return random_colorized
+
+def visualize_generation(examples, annot, img, i=None, tb=None):
+    examples_grid = torchvision.utils.make_grid((examples + 1) / 2, nrow=examples.size(0)) # 3 images per row
+    img_grid = torchvision.utils.make_grid((img + 1 ) / 2, nrow=examples.size(0)) # 3 images per row
+    labels_grid = torchvision.utils.make_grid(color_map(annot), nrow=examples.size(0)) # 10 images per row
+    
+    fig, ax = plt.subplots(nrows=3, figsize=(15,15), gridspec_kw={"wspace":0.2}) 
+    ax[0].imshow(np.transpose(examples_grid, (1,2,0)))
+    ax[1].imshow(np.transpose(labels_grid, (1,2,0)))
+    ax[2].imshow(np.transpose(img_grid, (1,2,0)))
+    if tb:
+        tb.add_figure('Generated', fig, i)
+    else:
+        plt.show()
+
+class ExponentialMovingAverage():
+    def __init__(self, parameters, decay=0.9999):
+        self.parameters = parameters
+        self.decay = decay
+
+    def update(self, module):
+        with torch.no_grad():
+            for ptarget, pold in zip(module.parameters(), self.parameters):
+                if ptarget.requires_grad:
+                    new_val = self.decay * pold.data + (1 - self.decay) * ptarget.data
+                    ptarget.copy_(new_val)
