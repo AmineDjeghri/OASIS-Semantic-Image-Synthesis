@@ -80,7 +80,7 @@ if __name__ == "__main__":
             label = one_hot_encode(annot, opt.data.nb_classes)
 
             # Optimize Discriminator
-            gen = G(z, label)
+            gen = G(z, label.to(torch.float))
             Dx_gen = D(gen)
             Dx_data = D(img)
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
             optim_D.step()
 
             # Optimize Generator
-            gen = G(z, label)
+            gen = G(z, label.to(torch.float))
             Dx_gen = D(gen)
             loss_G = weighted_CE(Dx_gen, annot)
             optim_G.zero_grad()
@@ -109,37 +109,37 @@ if __name__ == "__main__":
             epoch_D_loss += loss_D.item()
             
             tb.add_scalar('LossGenerator', loss_G.item(), t)
-            tb.add_scalar('LossDiscriminator', loss_G.item(), t)
+            tb.add_scalar('LossDiscriminator', loss_D.item(), t)
 
             t+=1
 
-            stop = time.time()
-            epoch_G_loss /= len(train_loader)
-            epoch_D_loss /= len(train_loader)
-            print(f"""Epoch: {epoch} done in {(stop - start) / 60 :.2} min\n 
-            Generator Loss: {epoch_G_loss :.4} - Discriminator Loss: {epoch_D_loss :.4}""")
-            
-            # Visualizing the epoch generation
-            examples = G(z_fixed, label[:opt.nb_examples]).detach().cpu()
-            visualize_generation(
-                examples, 
-                annot[:opt.nb_examples, None, :, :].cpu(),
-                img[:opt.nb_examples].cpu(),
-                tb=tb,
-                i=epoch
-            )
+        stop = time.time()
+        epoch_G_loss /= len(train_loader)
+        epoch_D_loss /= len(train_loader)
+        print(f"""Epoch: {epoch} done in {(stop - start) / 60 :.2} min\n 
+        Generator Loss: {epoch_G_loss :.4} - Discriminator Loss: {epoch_D_loss :.4}""")
+        
+        # Visualizing the epoch generation
+        examples = G(z_fixed, label[:opt.nb_examples]).detach().cpu()
+        visualize_generation(
+            examples, 
+            annot[:opt.nb_examples, None, :, :].cpu(),
+            img[:opt.nb_examples].cpu(),
+            tb=tb,
+            i=epoch
+        )
 
-            # Save if necessary
-            if epoch % opt.freq_save == 0:
-                logger.info("Saving model ...")
-                save_path_checkpoints = Path(opt.checkpoint_path) / f"oasis_{epoch}.pt"
-                save_dict = {
-                            'D_state_dict': D.state_dict(),
-                            'G_state_dict': G.state_dict(),
-                            'optimizerD_state_dict': optim_D.state_dict(),
-                            'optimizerG_state_dict': optim_G.state_dict(),
-                            'epoch': epoch,
-                            'last_lossG': epoch_G_loss,
-                            'last_lossD': epoch_D_loss
-                            }
-                torch.save(save_dict, save_path_checkpoints)
+        # Save if necessary
+        if epoch % opt.freq_save == 0:
+            logger.info("Saving model ...")
+            save_path_checkpoints = Path(opt.checkpoint_path) / f"oasis_{epoch}.pt"
+            save_dict = {
+                        'D_state_dict': D.state_dict(),
+                        'G_state_dict': G.state_dict(),
+                        'optimizerD_state_dict': optim_D.state_dict(),
+                        'optimizerG_state_dict': optim_G.state_dict(),
+                        'epoch': epoch,
+                        'last_lossG': epoch_G_loss,
+                        'last_lossD': epoch_D_loss
+                        }
+            torch.save(save_dict, save_path_checkpoints)

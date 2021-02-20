@@ -35,3 +35,14 @@ def test_labelmix(img1, img2, labelmap):
         ax[2].imshow(m.cpu(), cmap="gray")
         ax[3].imshow((l.permute(1,2,0).detach().cpu()+1)/2)
         plt.show()
+
+def test_dataset():
+    opt = load_yaml("config.yml")
+    train_dataset = ADEDataset(
+            path_to_images=Path(opt.data.path) / "images"/ "training",
+            path_to_annotations=Path(opt.data.path) / "annotations" / "training",
+            load_shape=(opt.data.load_height, opt.data.load_width)
+        )
+    train_loader = DataLoader(train_dataset, opt.batch_size, True, drop_last=True)
+    for a, b in train_loader:
+        print(a.shape, b.shape)
