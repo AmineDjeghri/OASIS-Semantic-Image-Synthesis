@@ -53,6 +53,7 @@ if __name__ == "__main__":
     tb = SummaryWriter(opt.tb_folder)    
     unweighted_CE = nn.CrossEntropyLoss()
     weighted_CE = nn.CrossEntropyLoss(class_weights)
+    mse_loss = nn.MSELoss()
     optim_D = optim.Adam(D.parameters(), lr=opt.optim.lr_D, betas=(opt.optim.beta1, opt.optim.beta2))
     optim_G = optim.Adam(G.parameters(), lr=opt.optim.lr_G, betas=(opt.optim.beta1, opt.optim.beta2))
 
@@ -103,7 +104,7 @@ if __name__ == "__main__":
             lmix = labelmix(img, gen, mask)
             Dx_lmix = D(lmix)
             lmix_Dx = labelmix(Dx_data, Dx_gen, mask)
-            label_mix_regul = torch.norm(Dx_lmix - lmix_Dx, p=None) ** 2
+            label_mix_regul = mse_loss(lmix_Dx, Dx_lmix)
 
             loss_D = weighted_CE(Dx_data, annot) + unweighted_CE(Dx_gen, label_gen)
             loss_D += opt.lambda_lm * label_mix_regul

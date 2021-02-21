@@ -36,37 +36,23 @@ class Generator(nn.Module):
         zy = torch.cat([z, y], dim=1)
 
         # (2) downsample via interpolate
-        zy1 = F.interpolate(zy, scale_factor=1/32, mode='nearest') # (batch_size, N+64, 8, 8), same mode used in SPADE
+        zy1 = F.interpolate(zy, scale_factor=1/(2**len(self.spade_blocks)), mode='nearest') # (batch_size, N+64, 8, 8), same mode used in SPADE
 
         # (3) First Convolution
         x = self.conv1(zy1)
 
-        # (3) SPADE Resnet Blocks
+        # (4) 1st SPADE Resnet Block
         x = self.spade_blocks[0](x, zy1)
         x = F.interpolate(x, scale_factor=2, mode='nearest')
 
-        # (3) SPADE Resnet Blocks
-        zy2 = F.interpolate(zy, scale_factor=1/16, mode='nearest')
-        x = self.spade_blocks[1](x, zy2)
-        x = F.interpolate(x, scale_factor=2, mode='nearest')
-        
-        # (4) SPADE Resnet Blocks
-        zy3 = F.interpolate(zy, scale_factor=1/8, mode='nearest')
-        x = self.spade_blocks[2](x, zy3)
-        x = F.interpolate(x, scale_factor=2, mode='nearest')
-        
         # (5) SPADE Resnet Blocks
-        zy3 = F.interpolate(zy, scale_factor=1/4, mode='nearest')
-        x = self.spade_blocks[3](x, zy3)
-        x = F.interpolate(x, scale_factor=2, mode='nearest')
+        for spade_block in self.spade_blocks[1:]:
+            zyi = F.interpolate(zy, size=x.shape[2:], mode='nearest')
+            x = spade_block(x, zyi)
+            x = F.interpolate(x, scale_factor=2, mode='nearest')
         
-        # (6) SPADE Resnet Blocks
-        zy3 = F.interpolate(zy, scale_factor=1/2, mode='nearest')
-        x = self.spade_blocks[4](x, zy3)
-        x = F.interpolate(x, scale_factor=2, mode='nearest')
-
         # (7) Final convolutional layer
-        x = self.conv2(x)
-        x = torch.tanh(F.leaky_relu(x, 2e-1))
+        x = self.conv2(F.leaky_relu(x, 2e-1))
+        x = torch.tanh(x)
 
         return x

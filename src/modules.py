@@ -4,9 +4,8 @@ import torch.nn.functional as F
 import torchvision
 import torch.nn.utils.spectral_norm as spectral_norm
 
-# Simplified Version of the Base Modules from the SPADE architecture implementation: ResnetBlock and SPADEResnetBlock
+# Simplified Version of the Base Modules from the SPADE architecture implementation: SPADE normalization and SPADEResnetBlock
 # Source: https://github.com/NVlabs/SPADE
-
 class SPADE(nn.Module):
     def __init__(self, num_channels_input, num_channels_label, hidden_dim, kernel_size):
         super().__init__()
@@ -83,11 +82,12 @@ class SPADEResnetBlock(nn.Module):
     def actvn(self, x):
         return F.leaky_relu(x, 2e-1)
 
-# ResBlock Up or Down from Brock et al's BIGGan-deep architecture
+# Implementation of ResBlock Up or Down from Brock et al's BIGGan-deep architecture
 class ResnetBlock(nn.Module):
     def __init__(self, fin, fout, up=True):
         super().__init__()
         self.learned_shortcut = (fin != fout)
+        self.up = up
 
         self.convks1_1 = spectral_norm(nn.Conv2d(fin, fout, 1))
         self.convks1_2 = spectral_norm(nn.Conv2d(fout, fout, 1))
@@ -103,10 +103,13 @@ class ResnetBlock(nn.Module):
 
         st = self.shortcut(x)
         
-        x = self.actvn(self.convks1_1(self.actvn(x)))
+        x = self.actvn(self.convks1_1(x))
+        if self.up:
+            x = self.sample_op(x)
         x = self.actvn(self.convks3_1(x))
         x = self.actvn(self.convks3_2(x))
-        x = self.sample_op(x)
+        if not self.up:
+            x = self.sample_op(x)
         x = self.convks1_2(x)
 
         x = x + st
