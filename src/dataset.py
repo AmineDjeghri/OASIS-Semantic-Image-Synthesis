@@ -56,7 +56,7 @@ class CityScapesDataset(Dataset):
     def __init__(self, path_to_images, path_to_annotations, load_shape):
         super().__init__()
         self.images = get_images(path_to_images, ext=".jpg")
-        self.annotations = get_images(path_to_annotations, ext=".jpg")
+        self.annotations = get_images(path_to_annotations, ext=".png")
         self.resize = Resize(load_shape)
 
         # Validation checks 
