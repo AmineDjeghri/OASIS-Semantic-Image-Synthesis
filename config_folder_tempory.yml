@@ -35,7 +35,7 @@ discriminator_params:
     - 64
 
 # Training Parameters
-batch_size: 32
+batch_size: 16
 optim:
   beta1: 0
   beta2: 0.999
