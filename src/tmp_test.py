@@ -28,7 +28,7 @@ if __name__ == "__main__":
     device = torch.device(opt.device)
     torch.manual_seed(opt.seed)
     print(" train folder: ", Path(opt.data.path))
-    train_dataset = ADEDataset(
+    train_dataset = CityScapesDataset(
         path_to_images=Path(opt.data.path) / "images"/ "training",
         path_to_annotations=Path(opt.data.path) / "annotations" / "training",
         load_shape=(opt.data.load_height, opt.data.load_width)
