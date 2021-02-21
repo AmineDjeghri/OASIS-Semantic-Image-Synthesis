@@ -5,7 +5,7 @@ data:
   load_width: 128
   load_height: 128
   nb_classes: 151 # 150 object classes, 1 "other" class
-  class_weights: "src\\class_weights_tmp.pt"
+  class_weights: "src/class_weights_tmp.pt"
 
 # Architecture parameters
 latent_dim: 64
