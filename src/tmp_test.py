@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import torchvision
 
-from dataset import ADEDataset
+from dataset import ADEDataset, CityScapesDataset
 from discriminator import Discriminator
 from generator import Generator
 from utils import *
