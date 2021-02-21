@@ -21,13 +21,14 @@ from utils import *
 logger = logging.Logger("train")
 parser = argparse.ArgumentParser(description='Train OASIS model.')
 parser.add_argument('config', help='path to the `config.yml` file')
+parser.add_argument('--checkpoint', help='path to checkpoint from which to resume training')
 
 if __name__ == "__main__":
     args = parser.parse_args()
     opt = load_yaml(args.config)
     device = torch.device(opt.device)
     torch.manual_seed(opt.seed)
-    print(" train folder: ", Path(opt.data.path))
+
     train_dataset = CityScapesDataset(
         path_to_images=Path(opt.data.path) / "images"/ "training",
         path_to_annotations=Path(opt.data.path) / "annotations" / "training",
@@ -52,18 +53,33 @@ if __name__ == "__main__":
     tb = SummaryWriter(opt.tb_folder)    
     unweighted_CE = nn.CrossEntropyLoss()
     weighted_CE = nn.CrossEntropyLoss(class_weights)
+    mse_loss = nn.MSELoss()
     optim_D = optim.Adam(D.parameters(), lr=opt.optim.lr_D, betas=(opt.optim.beta1, opt.optim.beta2))
     optim_G = optim.Adam(G.parameters(), lr=opt.optim.lr_G, betas=(opt.optim.beta1, opt.optim.beta2))
-    ema_G = ExponentialMovingAverage(G.parameters(), decay=opt.EMA_decay)
 
+    if args.checkpoint:
+        ckpt = torch.load(args.checkpoint)
+        G.load_state_dict(ckpt['G_state_dict'])
+        optim_G.load_state_dict(ckpt['optimizerG_state_dict'])
+        G.train()
+        
+        D.load_state_dict(ckpt['D_state_dict'])
+        optim_D.load_state_dict(ckpt['optimizerD_state_dict'])
+        D.train()
+        start_epoch = ckpt["epoch"] + 1
+        print(f"Resuming training at epoch {start_epoch}")
+        t = (ckpt["epoch"] + 1) * len(train_loader)
+    else:
+        start_epoch = 0
+        t = 0
+    
+    ema_G = ExponentialMovingAverage(G.parameters(), decay=opt.EMA_decay)
     print(f"Num params: \n Generator:{get_n_params(G, dimensions=False)}\n Discriminator: {get_n_params(D, dimensions=False)}")
 
     z_shape = (opt.nb_examples, opt.latent_dim, opt.data.load_height, opt.data.load_width)
     z_fixed = torch.randn((opt.nb_examples, opt.latent_dim, 1, 1), device=device).expand(z_shape)
-    
-    for epoch in range(opt.epochs):
-        
-        t = 0
+
+    for epoch in range(start_epoch, opt.epochs):
         start = time.time()
         epoch_G_loss = 0
         epoch_D_loss = 0
@@ -88,7 +104,7 @@ if __name__ == "__main__":
             lmix = labelmix(img, gen, mask)
             Dx_lmix = D(lmix)
             lmix_Dx = labelmix(Dx_data, Dx_gen, mask)
-            label_mix_regul = torch.norm(Dx_lmix - lmix_Dx, p=None) ** 2
+            label_mix_regul = mse_loss(lmix_Dx, Dx_lmix)
 
             loss_D = weighted_CE(Dx_data, annot) + unweighted_CE(Dx_gen, label_gen)
             loss_D += opt.lambda_lm * label_mix_regul
@@ -120,7 +136,7 @@ if __name__ == "__main__":
         Generator Loss: {epoch_G_loss :.4} - Discriminator Loss: {epoch_D_loss :.4}""")
         
         # Visualizing the epoch generation
-        examples = G(z_fixed, label[:opt.nb_examples]).detach().cpu()
+        examples = G(z_fixed, label[:opt.nb_examples].to(torch.float)).detach().cpu()
         visualize_generation(
             examples, 
             annot[:opt.nb_examples, None, :, :].cpu(),
@@ -131,8 +147,8 @@ if __name__ == "__main__":
 
         # Save if necessary
         if epoch % opt.freq_save == 0:
-            logger.info("Saving model ...")
-            save_path_checkpoints = Path(opt.checkpoint_path) / f"oasis_{epoch}.pt"
+            print("Saving model ...")
+            save_path_checkpoints = Path(opt.checkpoint_path) / f"oasis_model.pt"
             save_dict = {
                         'D_state_dict': D.state_dict(),
                         'G_state_dict': G.state_dict(),
@@ -143,3 +159,5 @@ if __name__ == "__main__":
                         'last_lossD': epoch_D_loss
                         }
             torch.save(save_dict, save_path_checkpoints)
+            print(f"Model saved at {save_path_checkpoints}")
+ 
