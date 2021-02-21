@@ -1,7 +1,7 @@
 
 # Data loading parameters
 data:
-  path: "//tempory/ADEChallengeData2016"
+  path: "citiscapes_data"
   load_width: 128
   load_height: 128
   nb_classes: 151 # 150 object classes, 1 "other" class
