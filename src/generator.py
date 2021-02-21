@@ -9,6 +9,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 from modules import SPADEResnetBlock
+from utils import init_weights
 
 class Generator(nn.Module):
     
@@ -26,6 +27,11 @@ class Generator(nn.Module):
             self.spade_blocks.append(
                 SPADEResnetBlock(fin=hin, fout=hout, in_channels_label=latent_dim+n_classes)
             )
+
+        gain = nn.init.calculate_gain('leaky_relu', 2e-1)
+        for block in self.spade_blocks:
+            block.apply(lambda m: init_weights(m, gain=gain))
+        self.conv2.apply(lambda m: init_weights(m, gain=nn.init.calculate_gain('tanh')))
         
     def forward(self, z, y):
         """
