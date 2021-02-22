@@ -15,7 +15,7 @@ implementation of the paper 'You Only Need Adversarial Supervision for Semantic 
 4. Adapt `config.yml` with your parameters.
 4. Launch training: `python src/train.py config.yml`
 
-## Other datasets: This is an example of ADE20k
+## Other datasets: 
 To use with other datasets, follow this organization:
 ```
 data_samples:
@@ -35,7 +35,7 @@ use `compute_class_weights` from `utils.py`
 cd /AMAL-Project/src
 from torch.utils.data import DataLoader
 from utils import compute_class_weights, get_weights
-from dataset import ADEDataset
+from dataset import ADEDataset # in this example we use ADE
 train_dataset = ADEDataset(Path("../cityscapes_data/images/training"),Path("../cityscapes_data/annotations/training"),128)
 train_loader = DataLoader(train_dataset, batch_size, True, drop_last=True)
 class_weights = compute_class_weights(train_loader, C=number_of_classes, H=height_of_images, W=width_of_images) # C=51 classes, H,W of ADE20 dataset
