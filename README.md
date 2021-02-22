@@ -4,7 +4,7 @@ implementation of the paper 'You Only Need Adversarial Supervision for Semantic 
 * Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
   - Claire Bizon Monroc ( Discriminator, Training/test loop)
   - Amine Djeghri (Datasets, Generator)
-  - Idles Mamou (metrics, configs)
+  - Idles Mamou (scores, configs)
 * `config.yml`: contains all architecture and training hyperparameters
 
 ## Training steps for ADEDataChallenge2016:
