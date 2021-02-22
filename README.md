@@ -1,7 +1,10 @@
 # AMAL-Project
 implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'
 
-
+* Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
+  - Claire Bizon Monroc ( Generator, Training/test loop,metrics)
+  - Amine Djeghri (Datasets, Discriminator,utils)
+  - Idles Mamou (metrics, configs, utils)
 * `config.yml`: contains all architecture and training hyperparameters
 
 ## Training steps for ADEDataChallenge2016:
