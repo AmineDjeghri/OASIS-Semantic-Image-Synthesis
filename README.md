@@ -1,7 +1,7 @@
 # AMAL-Project
-Implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'.
+Implementation of OASIS model, from the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'.
 
-Everything was coded from **scratch**, except the SPADEResnetBlock module which, like in the paper, was based on the offical SPADE modules.
+All the model was coded by us from **scratch**, except the SPADEResnetBlock module which, like in the paper, was based on the offical SPADE modules.
 
 * Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
   - Claire Bizon Monroc ( Discriminator, Training/test loop)
