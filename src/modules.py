@@ -82,7 +82,7 @@ class SPADEResnetBlock(nn.Module):
     def actvn(self, x):
         return F.leaky_relu(x, 2e-1)
 
-# Implementation of ResBlock Up or Down from Brock et al's BIGGan-deep architecture
+# Our implementation of ResBlock Up or Down from Brock et al's BIGGan-deep architecture
 class ResnetBlock(nn.Module):
     def __init__(self, fin, fout, up=True):
         super().__init__()

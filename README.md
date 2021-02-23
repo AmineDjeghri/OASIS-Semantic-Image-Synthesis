@@ -1,5 +1,6 @@
 # AMAL-Project
-implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'
+Implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'.
+Everything was coded from scratch, except the SPADEResnetBlock module which, like in the paper, was based on the offical SPADE implementation.
 
 * Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
   - Claire Bizon Monroc ( Discriminator, Training/test loop)
@@ -13,7 +14,12 @@ implementation of the paper 'You Only Need Adversarial Supervision for Semantic 
 `wget http://data.csail.mit.edu/places/ADEchallenge/ADEChallengeData2016.zip`
 3. Unzip `ADEChallengeData2016.zip` to replace `ADEChallengeData2016` folder
 4. Adapt `config.yml` with your parameters.
-4. Launch training: `python src/train.py config.yml`
+5. Launch training: `python src/train.py config.yml`
+
+## Generating Validation Data:
+1. `generate.py`: generates images from the validation segmentation maps
+    Generated images can then be used to compute the FID with the `pytorch-fid`
+2. `scores.py`: returns the mIOU score from the validation dataset
 
 ## Other datasets: 
 To use with other datasets, follow this organization:

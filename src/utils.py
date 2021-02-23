@@ -2,6 +2,7 @@ import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 
@@ -57,6 +58,16 @@ def get_n_params(Network, dimensions=True):
     if dimensions:
         return n_params, sizes
     return n_params
+
+def init_weights(m, gain):
+    if not hasattr(m, "weight"):
+        return None
+    if not hasattr(m.weight, "data"):
+        return None
+    # gain = nn.init.calculate_gain('leaky_relu', 2e-1)
+    nn.init.xavier_normal_(m.weight.data, gain=gain)
+    if hasattr(m, "bias") and m.bias is not None:
+        nn.init.normal_(m.bias.data)
 
 def compute_class_weights(loader, C, H, W, path_to_class_weights=None):
     """

@@ -13,6 +13,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 from modules import ResnetBlock
+from utils import init_weights
 
 class Discriminator(nn.Module):
     def __init__(self, out_dim, down_hidden_dims, up_hidden_dims):
@@ -29,6 +30,13 @@ class Discriminator(nn.Module):
             )
 
         self.conv = nn.Conv2d(up_hidden_dims[-1], out_dim, kernel_size=3, padding=1)
+        
+        gain = nn.init.calculate_gain('leaky_relu', 2e-1)
+        for block in self.resnet_blocks_down:
+            block.apply(lambda m: init_weights(m, gain=gain))
+        
+        for block in self.resnet_blocks_up:
+            block.apply(lambda m: init_weights(m, gain=gain))
 
     def forward(self, x):
         """
