@@ -1,11 +1,11 @@
 
 # Data loading parameters
 data:
-  path: "data_samples\\ADEChallengeData2016"
+  path: "data_samples/ADEChallengeData2016"
   load_width: 128
   load_height: 128
   nb_classes: 151 # 150 object classes, 1 "other" class
-  class_weights: "src\\class_weights.pt"
+  class_weights: "data_samples/ADEChallengeData2016/class_weights.pt"
 
 # Architecture parameters
 latent_dim: 64
