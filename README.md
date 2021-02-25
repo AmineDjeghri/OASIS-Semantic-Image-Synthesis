@@ -7,6 +7,11 @@ Implementation of the paper 'You Only Need Adversarial Supervision for Semantic 
   - Idles Mamou (scores, configs)
 * `config.yml`: contains all architecture and training hyperparameters
 
+
+<p align="center">
+  <img src="generated_images.PNG">
+</p>
+
 ## Training steps for ADEDataChallenge2016:
 1. Clone repository
 2. Download ADEChallengeData2016 dataset:
