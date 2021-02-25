@@ -1,13 +1,12 @@
 # AMAL-Project
-Implementation of OASIS model, from the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'.
-
-All the project (discriminator.py, generator.py, scores.py, train.py, generate.py ...ect.) was coded by us from **scratch**, except one thing that is the SPADEResnetBlock module (modules.py) which, like in the paper, was based on the offical SPADE modules.
+Implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'
 
 * Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
   - Claire Bizon Monroc ( Discriminator, Training/test loop)
   - Amine Djeghri (Datasets, Generator)
   - Idles Mamou (scores, configs)
 * `config.yml`: contains all architecture and training hyperparameters
+
 
 <p align="center">
   <img src="generated_images.PNG">
