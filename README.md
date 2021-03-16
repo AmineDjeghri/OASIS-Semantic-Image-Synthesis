@@ -12,11 +12,9 @@ Implementation of the paper 'You Only Need Adversarial Supervision for Semantic 
   <img src="generated_images.PNG">
 </p>
 
-<object data="https://github.com/AmineDjeghri/AMAL-Project/blob/master/Poster.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/AmineDjeghri/AMAL-Project/blob/master/Poster.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/AmineDjeghri/AMAL-Project/blob/master/Poster.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+<p align="center">
+  <img src="Poster.PNG">
+</p>
 
 ## Training steps for ADEDataChallenge2016:
 1. Clone repository
