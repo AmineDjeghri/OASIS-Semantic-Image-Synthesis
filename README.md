@@ -1,4 +1,6 @@
-# OASIS-Semantic-Image-Synthesis ( M2 DAC AMAL Project)
+# OASIS-Semantic-Image-Synthesis 
+(M2 DAC AMAL Project)
+
 Implementation of the paper 'You Only Need Adversarial Supervision for Semantic Image Synthesis'
 
 * Authors of this implementation : All authors provided the same work in terms of time, effort and contributions
